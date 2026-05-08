@@ -1,7 +1,9 @@
-import { useRef, useState } from 'react';
+import { forwardRef, useState } from 'react';
 import { css, cx } from '../../styled-system/css';
 
 type Props = {
+  value: string;
+  onChange: (val: string) => void;
   onSubmit: (word: string) => 'ok' | 'duplicate' | 'invalid';
   disabled?: boolean;
 };
@@ -42,11 +44,12 @@ const hintStyle = css({
   textAlign: 'center',
 });
 
-export function GuessInput({ onSubmit, disabled }: Props) {
-  const [value, setValue] = useState('');
+export const GuessInput = forwardRef<HTMLInputElement, Props>(function GuessInput(
+  { value, onChange, onSubmit, disabled },
+  ref,
+) {
   const [hint, setHint] = useState('');
   const [shaking, setShaking] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   function shake(message: string) {
     setHint(message);
@@ -61,7 +64,6 @@ export function GuessInput({ onSubmit, disabled }: Props) {
 
     const result = onSubmit(word);
     if (result === 'ok') {
-      setValue('');
       setHint('');
     } else if (result === 'duplicate') {
       shake('Already guessed');
@@ -73,11 +75,14 @@ export function GuessInput({ onSubmit, disabled }: Props) {
   return (
     <form onSubmit={handleSubmit}>
       <input
-        ref={inputRef}
+        ref={ref}
         className={cx(inputStyle, shaking && shakeStyle)}
         type="text"
         value={value}
-        onChange={e => setValue(e.target.value.toLowerCase())}
+        onChange={e => {
+          onChange(e.target.value.toLowerCase());
+          setHint('');
+        }}
         placeholder="type a word…"
         autoComplete="off"
         autoCorrect="off"
@@ -88,4 +93,4 @@ export function GuessInput({ onSubmit, disabled }: Props) {
       <div className={hintStyle}>{hint}</div>
     </form>
   );
-}
+});

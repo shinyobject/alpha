@@ -6,6 +6,7 @@ type Props = {
   guessCount: number;
   durationMs: number;
   puzzleN: number;
+  hintsUsed: number;
   onShare: () => void;
   shareConfirmed: boolean;
 };
@@ -63,7 +64,7 @@ const shareButtonStyle = css({
   transition: 'background 0.15s',
 });
 
-export function WinState({ word, guessCount, durationMs, puzzleN, onShare, shareConfirmed }: Props) {
+export function WinState({ word, guessCount, durationMs, puzzleN, hintsUsed, onShare, shareConfirmed }: Props) {
   return (
     <div className={containerStyle}>
       <div className={css({ fontSize: 'lg', color: 'gray.500' })}>Puzzle #{puzzleN} — you got it!</div>
@@ -77,6 +78,12 @@ export function WinState({ word, guessCount, durationMs, puzzleN, onShare, share
           <span className={statValueStyle}>{formatDuration(durationMs)}</span>
           <span>time</span>
         </div>
+        {hintsUsed > 0 && (
+          <div className={statStyle}>
+            <span className={statValueStyle}>{hintsUsed}</span>
+            <span>{hintsUsed === 1 ? 'hint' : 'hints'}</span>
+          </div>
+        )}
       </div>
       <button className={shareButtonStyle} onClick={onShare}>
         {shareConfirmed ? 'Copied!' : 'Share'}
