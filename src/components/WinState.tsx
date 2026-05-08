@@ -66,7 +66,7 @@ const shareButtonStyle = css({
 export function WinState({ word, guessCount, durationMs, puzzleN, onShare, shareConfirmed }: Props) {
   return (
     <div className={containerStyle}>
-      <div className={css({ fontSize: 'lg', color: 'gray.500' })}>You got it!</div>
+      <div className={css({ fontSize: 'lg', color: 'gray.500' })}>Puzzle #{puzzleN} — you got it!</div>
       <div className={wordStyle}>{word}</div>
       <div className={statsStyle}>
         <div className={statStyle}>

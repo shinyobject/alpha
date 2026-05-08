@@ -5,6 +5,7 @@ import { GuessInput } from './components/GuessInput';
 import { WinState } from './components/WinState';
 import { compare, getLowerBound, getUpperBound, formatDuration } from './game/logic';
 import type { Guess } from './game/types';
+import { getValidWords } from './words';
 
 // Phase 1: hardcoded target word
 const TARGET_WORD = 'planet';
@@ -51,7 +52,12 @@ export default function App() {
   const [won, setWon] = useState(false);
   const [solvedAt, setSolvedAt] = useState<number | null>(null);
   const [shareConfirmed, setShareConfirmed] = useState(false);
+  const [validWords, setValidWords] = useState<Set<string> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useEffect(() => {
+    getValidWords().then(setValidWords);
+  }, []);
 
   useEffect(() => {
     if (startedAt && !won) {
@@ -65,8 +71,7 @@ export default function App() {
   const handleGuess = useCallback((word: string): 'ok' | 'duplicate' | 'invalid' => {
     if (guesses.some(g => g.word === word)) return 'duplicate';
 
-    // Phase 1: no dictionary validation, accept any non-empty lowercase letters
-    if (!/^[a-z]+$/.test(word)) return 'invalid';
+    if (!validWords || !validWords.has(word)) return 'invalid';
 
     const relation = compare(word, TARGET_WORD);
     const ts = Date.now();
@@ -83,7 +88,7 @@ export default function App() {
     }
 
     return 'ok';
-  }, [guesses, startedAt]);
+  }, [guesses, startedAt, validWords]);
 
   const durationMs = won && startedAt && solvedAt
     ? solvedAt - startedAt
@@ -138,7 +143,7 @@ export default function App() {
         <BoundsDisplay
           lowerBound={lowerBound}
           upperBound={upperBound}
-          middle={<GuessInput onSubmit={handleGuess} disabled={won} />}
+          middle={<GuessInput onSubmit={handleGuess} disabled={won || !validWords} />}
         />
       )}
 
