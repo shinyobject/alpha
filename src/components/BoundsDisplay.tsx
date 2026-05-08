@@ -1,8 +1,10 @@
+import React from 'react';
 import { css } from '../../styled-system/css';
 
 type Props = {
-  lowerBound: string;
-  upperBound: string;
+  lowerBound: string[];
+  upperBound: string[];
+  middle?: React.ReactNode;
 };
 
 const boundStyle = css({
@@ -14,31 +16,45 @@ const boundStyle = css({
   userSelect: 'none',
 });
 
-const labelStyle = css({
-  fontSize: 'xs',
-  fontWeight: 'medium',
-  textTransform: 'uppercase',
-  letterSpacing: 'widest',
-  color: 'gray.400',
-  mb: '1',
+const wrapperStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  flex: '1',
+  minH: '0',
 });
 
-const containerStyle = css({
+const listTopStyle = css({
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'flex-end',
+  flex: '1',
+  overflowY: 'auto',
   textAlign: 'center',
   py: '2',
 });
 
-export function BoundsDisplay({ lowerBound, upperBound }: Props) {
+const listBottomStyle = css({
+  flex: '1',
+  overflowY: 'auto',
+  textAlign: 'center',
+  py: '2',
+});
+
+export function BoundsDisplay({ lowerBound, upperBound, middle }: Props) {
   return (
-    <div>
-      <div className={containerStyle}>
-        <div className={labelStyle}>after</div>
-        <div className={boundStyle}>{lowerBound}</div>
+    <div className={wrapperStyle}>
+      <div className={listTopStyle}>
+        {lowerBound.map(word => (
+          <div key={word} className={boundStyle}>{word}</div>
+        ))}
       </div>
 
-      <div className={containerStyle}>
-        <div className={labelStyle}>before</div>
-        <div className={boundStyle}>{upperBound}</div>
+      {middle}
+
+      <div className={listBottomStyle}>
+        {upperBound.map(word => (
+          <div key={word} className={boundStyle}>{word}</div>
+        ))}
       </div>
     </div>
   );

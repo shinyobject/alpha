@@ -2,7 +2,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { css } from '../styled-system/css';
 import { BoundsDisplay } from './components/BoundsDisplay';
 import { GuessInput } from './components/GuessInput';
-import { GuessList } from './components/GuessList';
 import { WinState } from './components/WinState';
 import { compare, getLowerBound, getUpperBound, formatDuration } from './game/logic';
 import type { Guess } from './game/types';
@@ -16,7 +15,7 @@ const layoutStyle = css({
   mx: 'auto',
   px: '4',
   py: '6',
-  minH: '100svh',
+  h: '100svh',
   display: 'flex',
   flexDirection: 'column',
   gap: '4',
@@ -43,13 +42,6 @@ const metaStyle = css({
   color: 'gray.400',
   display: 'flex',
   gap: '3',
-});
-
-const dividerStyle = css({
-  border: 'none',
-  borderTop: '1px solid',
-  borderColor: 'gray.100',
-  my: '1',
 });
 
 export default function App() {
@@ -128,8 +120,8 @@ export default function App() {
         <span className={titleStyle}>AlphaGuess</span>
         <span className={metaStyle}>
           <span>#{PUZZLE_N}</span>
-          {startedAt && !won && <span>{formatDuration(durationMs)}</span>}
-          {guesses.length > 0 && <span>{guesses.length} {guesses.length === 1 ? 'guess' : 'guesses'}</span>}
+          {won && <span>{formatDuration(durationMs)}</span>}
+          {won && <span>{guesses.length} {guesses.length === 1 ? 'guess' : 'guesses'}</span>}
         </span>
       </header>
 
@@ -143,14 +135,13 @@ export default function App() {
           shareConfirmed={shareConfirmed}
         />
       ) : (
-        <div className={css({ display: 'flex', flexDirection: 'column', gap: '3' })}>
-          <BoundsDisplay lowerBound={lowerBound} upperBound={upperBound} />
-          <hr className={dividerStyle} />
-          <GuessInput onSubmit={handleGuess} disabled={won} />
-        </div>
+        <BoundsDisplay
+          lowerBound={lowerBound}
+          upperBound={upperBound}
+          middle={<GuessInput onSubmit={handleGuess} disabled={won} />}
+        />
       )}
 
-      <GuessList guesses={guesses} />
     </div>
   );
 }

@@ -5,16 +5,12 @@ export function compare(guess: string, target: string): Relation {
   return guess < target ? 'after' : 'before';
 }
 
-// Closest lower bound: largest 'after' guess (target is alphabetically after it)
-export function getLowerBound(guesses: Guess[]): string {
-  const candidates = guesses.filter(g => g.relation === 'after').map(g => g.word);
-  return candidates.length ? candidates.reduce((a, b) => (a > b ? a : b)) : 'aaaa';
+export function getLowerBound(guesses: Guess[]): string[] {
+  return guesses.filter(g => g.relation === 'after').map(g => g.word).sort();
 }
 
-// Closest upper bound: smallest 'before' guess (target is alphabetically before it)
-export function getUpperBound(guesses: Guess[]): string {
-  const candidates = guesses.filter(g => g.relation === 'before').map(g => g.word);
-  return candidates.length ? candidates.reduce((a, b) => (a < b ? a : b)) : 'zzzz';
+export function getUpperBound(guesses: Guess[]): string[] {
+  return guesses.filter(g => g.relation === 'before').map(g => g.word).sort();
 }
 
 export function formatDuration(ms: number): string {
