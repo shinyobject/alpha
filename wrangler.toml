@@ -1,0 +1,8 @@
+name = "alphaguess"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-09-23"
+
+[[kv_namespaces]]
+binding = "PUZZLES"
+id = "ac231a36b87f4d33b190a06818077059"
+

@@ -9,19 +9,24 @@
     "build": "panda codegen && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build-words": "tsx scripts/build-wordlists.ts"
+    "build-words": "tsx scripts/build-wordlists.ts",
+    "seed": "dotenv -e .env -- tsx scripts/seed-puzzles.ts",
+    "seed:local": "tsx scripts/seed-puzzles.ts --local && wrangler kv bulk put scripts/seed-data.json --namespace-id ac231a36b87f4d33b190a06818077059 --local",
+    "dev:pages": "wrangler pages dev dist"
   },
   "dependencies": {
     "react": "^19.2.5",
     "react-dom": "^19.2.5"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260508.1",
     "@eslint/js": "^10.0.1",
     "@pandacss/dev": "^1.10.0",
     "@types/node": "^24.12.2",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
+    "dotenv-cli": "^11.0.0",
     "eslint": "^10.2.1",
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.2",
@@ -30,6 +35,7 @@
     "tsx": "^4.21.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "wrangler": "^4.90.0"
   }
 }

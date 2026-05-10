@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
 
 # Editor directories and files
 .vscode/*
@@ -26,3 +27,7 @@ dist-ssr
 ## Panda
 styled-system
 styled-system-studio
+
+## Wrangler
+.wrangler
+scripts/seed-data.json

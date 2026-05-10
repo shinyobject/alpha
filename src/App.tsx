@@ -4,7 +4,7 @@ import { BoundsDisplay } from './components/BoundsDisplay';
 import { GuessInput } from './components/GuessInput';
 import { WinState } from './components/WinState';
 import { compare, getLowerBound, getUpperBound, formatDuration } from './game/logic';
-import { todayPuzzleNumber, getDailyWord } from './game/daily';
+import { todayPuzzleNumber, getDailyWord, FuturePuzzleError } from './game/daily';
 import { loadActiveGame, saveActiveGame, loadCompletedPuzzles, saveCompletedPuzzle } from './game/storage';
 import type { Guess } from './game/types';
 import { getValidWords } from './words';
@@ -115,6 +115,7 @@ export default function App() {
   const [inputValue, setInputValue] = useState('');
   const [revealError, setRevealError] = useState('');
   const [shareConfirmed, setShareConfirmed] = useState(false);
+  const [puzzleError, setPuzzleError] = useState<'future' | 'unavailable' | null>(null);
   const [validWords, setValidWords] = useState<Set<string> | null>(null);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -126,6 +127,7 @@ export default function App() {
   // When puzzle changes: restore game state from localStorage, load word
   useEffect(() => {
     setTargetWord(null);
+    setPuzzleError(null);
     setInputValue('');
     setRevealError('');
     setShareConfirmed(false);
@@ -156,7 +158,9 @@ export default function App() {
       }
     }
 
-    getDailyWord(puzzleN).then(setTargetWord);
+    getDailyWord(puzzleN).then(setTargetWord).catch(err => {
+      setPuzzleError(err instanceof FuturePuzzleError ? 'future' : 'unavailable');
+    });
   }, [puzzleN]);
 
   useEffect(() => {
@@ -270,7 +274,15 @@ export default function App() {
         </div>
       )}
 
-      <BoundsDisplay
+      {puzzleError && (
+        <div className={css({ textAlign: 'center', py: '10', color: 'gray.500', fontSize: 'sm' })}>
+          {puzzleError === 'future'
+            ? `Puzzle #${puzzleN} hasn't been released yet.`
+            : `Puzzle #${puzzleN} couldn't be loaded. Try again.`}
+        </div>
+      )}
+
+      {!puzzleError && <BoundsDisplay
         lowerBound={lowerBound}
         upperBound={upperBound}
         middle={
@@ -308,7 +320,7 @@ export default function App() {
             </>
           )
         }
-      />
+      />}
 
     </div>
   );

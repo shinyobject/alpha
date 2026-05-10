@@ -14,38 +14,17 @@ export function todayPuzzleNumber(dayOffset = 0): number {
   return daysBetween(LAUNCH_DATE, todayPT) + 1;
 }
 
-function mulberry32(seed: number): () => number {
-  return function () {
-    seed |= 0;
-    seed = (seed + 0x6D2B79F5) | 0;
-    let z = Math.imul(seed ^ (seed >>> 15), 1 | seed);
-    z = (z + Math.imul(z ^ (z >>> 7), 61 | z)) ^ z;
-    return ((z ^ (z >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
-export function seededIndex(n: number, length: number): number {
-  const rand = mulberry32(n);
-  return Math.floor(rand() * length);
-}
-
-let dailyPool: string[] | null = null;
-let loadingPool: Promise<string[]> | null = null;
-
-export function getDailyPool(): Promise<string[]> {
-  if (dailyPool) return Promise.resolve(dailyPool);
-  if (!loadingPool) {
-    loadingPool = fetch('/words/daily.json')
-      .then(r => r.json() as Promise<string[]>)
-      .then(words => {
-        dailyPool = words;
-        return words;
-      });
+export class FuturePuzzleError extends Error {
+  constructor(n: number) {
+    super(`Puzzle #${n} is in the future`);
+    this.name = 'FuturePuzzleError';
   }
-  return loadingPool;
 }
 
 export async function getDailyWord(n: number): Promise<string> {
-  const pool = await getDailyPool();
-  return pool[seededIndex(n, pool.length)];
+  const res = await fetch(`/api/word/${n}`);
+  if (res.status === 403) throw new FuturePuzzleError(n);
+  if (!res.ok) throw new Error(`Failed to load puzzle ${n}: ${res.status}`);
+  const data = await res.json() as { word: string };
+  return data.word;
 }
