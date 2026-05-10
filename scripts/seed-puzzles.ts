@@ -15,6 +15,13 @@ import { fileURLToPath } from 'node:url';
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const localMode = process.argv.includes('--local');
 
+function getArg(flag: string): number | undefined {
+  const idx = process.argv.indexOf(flag);
+  if (idx === -1) return undefined;
+  const val = parseInt(process.argv[idx + 1], 10);
+  return Number.isFinite(val) ? val : undefined;
+}
+
 // ── same shuffle used to pick puzzle words ──────────────────────────────────
 function mulberry32(seed: number): () => number {
   return function () {
@@ -36,10 +43,18 @@ const pool: string[] = JSON.parse(
 );
 console.log(`Daily pool: ${pool.length} words`);
 
-const TARGET_PUZZLES = 1825; // 5 years
+const TARGET_PUZZLES = 3650; // 10 years
+const startN = getArg('--start') ?? 1;
+const endN = getArg('--end') ?? TARGET_PUZZLES;
+
+if (startN < 1 || endN > TARGET_PUZZLES || startN > endN) {
+  console.error(`--start/--end must be in range 1–${TARGET_PUZZLES} with start ≤ end`);
+  process.exit(1);
+}
+
 const entries: Array<{ key: string; value: string }> = [];
 
-for (let n = 1; n <= TARGET_PUZZLES; n++) {
+for (let n = startN; n <= endN; n++) {
   const word = pool[seededIndex(n, pool.length)];
   entries.push({ key: `puzzle:${n}`, value: word });
 }
@@ -62,7 +77,7 @@ if (!accountId || !namespaceId || !apiToken) {
   process.exit(1);
 }
 
-console.log(`Uploading ${entries.length} puzzle entries to KV…`);
+console.log(`Uploading puzzles ${startN}–${endN} (${entries.length} entries) to KV…`);
 
 const url = `https://api.cloudflare.com/client/v4/accounts/${accountId}/storage/kv/namespaces/${namespaceId}/bulk`;
 
@@ -82,4 +97,4 @@ if (!body.success) {
   process.exit(1);
 }
 
-console.log(`Done. Puzzles 1–${TARGET_PUZZLES} are now seeded.`);
+console.log(`Done. Puzzles ${startN}–${endN} are now seeded.`);
