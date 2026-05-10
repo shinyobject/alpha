@@ -251,7 +251,7 @@ export default function App() {
   return (
     <div className={layoutStyle}>
       <header className={headerStyle}>
-        <span className={titleStyle}>AlphaGuess</span>
+        <span className={titleStyle}>Alpha Guesser</span>
         <span className={metaStyle}>
           <span>#{puzzleN}</span>
           {won && <span>{formatDuration(durationMs)}</span>}

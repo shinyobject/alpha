@@ -246,13 +246,13 @@ Time formatter:
 
 ## Cloudflare Access setup
 
-1. Confirm `shinyobject.app` is on Cloudflare DNS (it is)
+1. Confirm `shinyobject.me` is on Cloudflare DNS (it is)
 2. Create Pages project, link repo
-3. Add custom domain `alpha.shinyobject.app` to the Pages project
+3. Add custom domain `alpha.shinyobject.me` to the Pages project
 4. In Cloudflare Zero Trust dashboard:
    - Settings → Authentication → enable Google + One-time PIN identity providers
    - Access → Applications → Add → Self-hosted
-   - Application domain: `alpha.shinyobject.app` (entire host, no path filter)
+   - Application domain: `alpha.shinyobject.me` (entire host, no path filter)
    - Session duration: 1 month
    - Add policy: name "Friends", action Allow, include rule "Emails: <list>"
 5. Smoke test: visit the URL incognito, complete the Access flow, land on the SPA
@@ -314,12 +314,11 @@ Optional: Pages Functions can read the verified email from the `Cf-Access-Authen
 - Implement `GET /api/today` and `GET /api/word/:n`
 - Run `seed-puzzles.ts` against KV (5 years)
 - Replace client-side shuffle with `fetch('/api/word/:n')`
-- Remove daily pool from client bundle (validation list stays)
 - Verify future puzzles return 403
 
 ### Phase 5 — Deploy
 - Pages project linked to repo
-- Custom domain `alpha.shinyobject.app`
+- Custom domain `alpha.shinyobject.me`
 - Cloudflare Access application + Friends policy
 - Smoke test with one friend's email added to the policy
 
@@ -328,6 +327,9 @@ Optional: Pages Functions can read the verified email from the `Cf-Access-Authen
 - Past puzzles screen
 - Local stats screen (computed from `completed` map: total played, avg guesses, fastest solve)
 - Mobile keyboard handling, animations, empty/error states
+
+### FUTURE options
+- Remove daily pool from client bundle (validation list stays)
 
 ## Decisions locked
 
